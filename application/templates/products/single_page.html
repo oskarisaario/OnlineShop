@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+<!--------------------------------------------- Navbar ends ------------------------------------------------------------------>
+<div class="container mt-5">
+    {% include '_messages.html' %}
+    <div class="row">
+        <div class="col-md-6" id="b_image">
+            <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{product.name}}" width="400" height="400">
+        </div>
+        <div class="col-md-6">
+            <h4>{{ product.name }}</h4>
+            <hr>
+            {% if product.discount > 0 %}
+                <p>Discount: {{ product.discount }}%</p>
+                <div class="div">Price with discount: {{product.price|float - (product.discount/100) * product.price|float }}€ (<u style="text-decoration: line-through;">{{ product.price }}€</u>)</div>
+                <p></p>
+            {% else %}
+                <p>Price: {{ product.price }}</p>
+            {% endif %}
+            <b>Product Description</b>
+            <p>{{ product.desc }}</p>
+            <hr>
+<!------------------------------------------------ ADD product to Cart  ------------------------------------------------>
+            <form action="{{url_for('addCart')}}" method="POST">
+                <input type="hidden" name="product_id" value="{{product.id}}">
+                <button type="submit" class="btn btn-sm btn-warning">Add Cart</button>
+                <label for="">Quantity:</label>
+                <input type="number" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                {% set colors = product.colors.split(',') %}
+                    <label for="colors">Colors:</label>
+                    <select name="colors" id="colors">
+                        {% for color in colors %}
+                            {% set col = color.split(':') %}
+                            <option value="{{col[0]}}">{{col[0]|capitalize}}</option>
+                        {% endfor %}
+                    </select>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 mt-3" id="s_image">
+            <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{ product.name }}" width="120" height="120" class="p-3">
+            <img src="{{url_for('static', filename='images/' + product.image_2)}}" alt="{{ product.name }}" width="120" height="120" class="p-3">
+            <img src="{{url_for('static', filename='images/' + product.image_3)}}" alt="{{ product.name }}" width="120" height="120" class="p-3">
+        </div>
+    </div>
+
+</div>
+
+<!-- Javascript for viewing all images of the producs -->
+<script>
+    var b_image = document.getElementById('b_image');
+    var s_image = document.getElementById('s_image').getElementsByTagName('img');
+    for(var i = 0; i < s_image.length; i++){
+        s_image[i].addEventListener('click', full_image);
+    }
+
+    function full_image(){
+        var imageSRC = this.getAttribute('src');
+        b_image.innerHTML = "<img src =" + imageSRC + " width='400' height='400'>"
+    }
+</script>
+
+
+{% endblock %}

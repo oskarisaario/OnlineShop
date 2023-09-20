@@ -1,0 +1,96 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+{% include 'navbar.html' %}
+    <div class="container mt-4">
+        {% include '_messages.html' %}
+        <div class="row">
+            <div class="col-md-12">
+                Invoice: {{orders.invoice}}
+                <br>
+                Status: {{orders.status}}
+                <br>
+                Customer name: {{customer.name}}
+                <br>
+                Customer email: {{customer.email}}
+                <br>
+                Customer contact: {{customer.contact}}
+                <br>
+                <br>
+            <table class="table table-sm">
+                <thead>
+                    <th>Sr</th>
+                    <th>Name</th>
+                    <th>Color</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                </thead>
+                <tbody>
+                    {% for key, product in orders.orders.items() %}
+                    {% set discount = "%0.2f"|format((product.discount/100) * product.price|float) %}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{product.name}}</td>
+                        <form action="{{url_for('updatecart', code=key)}}" method="POST">
+                            <td>
+                                {{product.color | capitalize}}
+                            </td>
+                            {% if product.discount > 0 %}
+                                <td>{{"%0.2f"|format(product.price|float - discount|float) }}€</br>(<u style="text-decoration: line-through;">{{ product.price }}€</u>)</td>
+                                <td>{{product.discount}}%</td>
+                            {% else %}
+                                <td>{{product.price}}€</td>
+                                <td></td>
+                            {% endif %}
+                            <td>
+                                {{product.quantity}}
+                            </td>
+                            <td>{{subTotal}}€</td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <table class="table table-sm">
+                <tr>
+                    <td>
+                        {% if orders.status == 'Paid' %}
+                        {% else %}
+                        <form action="{{url_for('payment')}}" method="POST">
+                            {% set grandTotal = grandTotal|string %}
+                            {% set amount = grandTotal.replace('.','') %}
+                            {% set amount = amount|int %}
+                            <input type="hidden" name="amount" value="{{amount}}">
+                            <input type="hidden" name="invoice" value="{{orders.invoice}}">
+                            <script
+                                src="https://checkout.stripe.com/checkout.js"
+                                class="stripe-button"
+                                data-key="pk_test_51NsKcqBQQM3gMqIDpttH1xWgVlQszJrs2YR48aZh3asBfJ7djW0ClxBF1JfmtBEsv81cc5dLHxemYoE0zsFPkp1D007Wtf7yij"
+                                data-name="Onlineshop"
+                                data-description="Comfortable"
+                                data-amount="{{ amount * 10 }}"
+                                data-currency="eur">
+                            </script>
+                        </form>
+                        {% endif %}
+                    </td>
+                    <td width="40%"></td>
+                    <td></td>
+                    <td></td>
+                    <td>                
+                        <form action="{{url_for('get_pdf', invoice=orders.invoice)}}" method="POST">
+                            <button type="submit" class="btn btn-info">Get receipt as PDF</button>
+                        </form>
+                    </td>
+                    <td>
+                        {% set grandTotal = grandTotal|int %}
+                        <h4 style="text-decoration: double underline;">Grandtotal: {{"%0.2f"|format(grandTotal)}}€</h4>
+                    </td>
+                </tr>
+            </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

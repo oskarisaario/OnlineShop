@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="container">
+    {% include '_messages.html' %}
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-3 mt-4 d-flex">
+            <div class="card">
+                <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{product.name}}" class="card-img-top" height="300">
+                <div class="card-body">
+                    {% if product.discount > 0%}
+                    <h4 style="font-weight:bold ; color:white; background-color:red; transform: rotate(-25deg); position: absolute; top:7.5%; left: 0%;">DISCOUNT {{product.discount}}%</h4>
+                    <h5 class="text-center">{{product.name}}</h5>
+                    <h5 class="text-center">{{product.price - product.price / product.discount}}€</h5>
+                    <p class="text-center" style="text-decoration: line-through;">{{product.price}}€</p>
+                    {% else %}
+                    <h5 class="text-center">{{product.name}}</h5>
+                    <p class="text-center">{{product.price}}€</p>
+                    <p> </p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{url_for('single_page', id=product.id)}}" class="float-start btn btn-sm btn-primary">Details</a> 
+                    <form action="{{url_for('addCart')}}" method="POST">
+                        <input type="hidden" name="product_id" value="{{product.id}}">
+                        <button type="submit" class="btn btn-sm btn-warning float-end">Add Cart</button>
+                        <input type="hidden" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
+                        {% set colors = product.colors.split(',') %}
+                            <select name="colors" id="colors" style="visibility: hidden;">
+                                {% for color in colors %}
+                                    {% set col = color.split(':') %}
+                                    <option value="{{col[0]}}">{{col[0]|capitalize}}</option>
+                                {% endfor %}
+                            </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
