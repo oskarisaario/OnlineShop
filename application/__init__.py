@@ -1,10 +1,10 @@
 from flask import Flask
-import psycopg2
+#import psycopg2
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine
+#from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy_utils import database_exists, create_database
+#from sqlalchemy_utils import database_exists, create_database
 from flask_uploads import IMAGES, UploadSet, configure_uploads
 from flask_msearch import Search
 from flask_login import LoginManager
@@ -45,12 +45,13 @@ with app.app_context():
     else:
         migrate.init_app(app, db)
 
-#Setup login for customer
+#Setup login_manager for customer
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'customerLogin'
 login_manager.needs_refresh_message_category='danger'
-login_manager.login_message = u"Please login first"
+login_manager.login_message = "Please login first"
+login_manager.login_message_category = "danger"
 
 #Import routes from different folders
 from application.admin import routes

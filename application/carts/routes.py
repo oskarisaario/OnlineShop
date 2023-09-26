@@ -57,13 +57,9 @@ def get_cart():
     if 'Shoppingcart' not in session or len(session['Shoppingcart']) <= 0:
         return redirect(url_for('home'))
     subtotal = 0
-    #grandtotal = 0
     for key, product in session['Shoppingcart'].items():
         discount = (product['discount']/100) * float(product['price'])
         subtotal += int(product['quantity']) * (float(product['price']) - float(discount))
-        #subtotal -= discount
-        #tax = ("%.2f" % (.06 * float(subtotal)))
-        #grandtotal = float("%.2f" % (1.06 * subtotal))
     grandtotal = subtotal
     return render_template('products/carts.html', grandtotal = grandtotal, brands=brands(), categories=categories())
 
@@ -80,14 +76,19 @@ def updatecart(code):
             session.modified = True
             for key, item in session['Shoppingcart'].items():
                 if int(key) == code:
-                    item['quantity'] = quantity
-                    item['color'] = color
-                    flash('Product details are updated!', 'success')
-                    return redirect(url_for(get_cart))
+                    product = Addproduct.query.get_or_404(code)
+                    if product.stock >= int(quantity):
+                        item['quantity'] = quantity
+                        item['color'] = color
+                    else:
+                        flash(f'Update product details failed! We have {product.name} only {product.stock} pieces in stock!', 'danger')
+                        return redirect(url_for(get_cart))
+            flash('Product details are updated!', 'success')
+            return redirect(url_for(get_cart))
         except Exception as e:
             print(e)
             return redirect(url_for('get_cart'))
-    return
+    return redirect(url_for('get_cart'))
 
 ################################ Delete item from Shoppingcart ################################
 @app.route('/deleteitem/<int:id>')

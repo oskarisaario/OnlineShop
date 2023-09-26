@@ -8,7 +8,7 @@ import secrets, os
 
 
 
-#Get Brands and Categories for templates
+############## Get Brands and Categories for navbar dropmenus #############
 def brands():
      brands = Brand.query.join(Addproduct, (Brand.id == Addproduct.brand_id)).all()
      return brands
@@ -23,7 +23,7 @@ def categories():
 @app.route('/')
 def home():
     page = request.args.get('page', 1, type=int)
-    products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()).paginate(page=page, per_page=3)
+    products = Addproduct.query.filter(Addproduct.stock > 0).order_by(Addproduct.id.desc()).paginate(page=page, per_page=6)
     return render_template('/products/index.html', products=products, brands=brands(), categories=categories())
 
 
@@ -89,18 +89,23 @@ def updatebrand(id):
         flash('Brand has been updated', 'success')
         db.session.commit()
         return redirect(url_for('brands'))
-    return render_template('products/updatebrand.html', title='Update brand', updatebrand = update_brand)
+    return render_template('admin/brand.html', title='Update brand', updatebrand = update_brand)
 
 
 @app.route('/deletebrand/<int:id>', methods=['POST'])
 def deletebrand(id):
     brand = Brand.query.get_or_404(id)
     if request.method == "POST":
-        db.session.delete(brand)
-        db.session.commit()
-        flash(f'Brand: {brand.name} is deleted succesfully', 'success')
-        return redirect(url_for('brands'))
-    flash(f'Error occurred! Brand: {brand.name} is not deleted', 'danger')
+        try:
+            db.session.delete(brand)
+            db.session.commit()
+            flash(f'Brand: {brand.name} is deleted succesfully', 'success')
+            return redirect(url_for('brands'))
+        except:
+            db.session.rollback()
+            flash(f'Error occurred! Brand: {brand.name} was not deleted', 'danger')
+            return redirect(url_for('brands'))
+
     return redirect(url_for('brands'))
 
 
@@ -134,18 +139,23 @@ def updatecategory(id):
         flash('Category has been updated', 'success')
         db.session.commit()
         return redirect(url_for('category'))
-    return render_template('products/updatebrand.html', title='Update category', updatecategory = update_category)
+    return render_template('admin/brand.html', title='Update category', updatecategory = update_category)
 
 
 @app.route('/deletecategory/<int:id>', methods=['POST'])
 def deletecategory(id):
     category = Category.query.get_or_404(id)
     if request.method == "POST":
-        db.session.delete(category)
-        db.session.commit()
-        flash(f'Category: {category.name} is deleted succesfully', 'success')
-        return redirect(url_for('category'))
-    flash(f'Error occurred! Category: {category.name} is not deleted', 'danger')
+        try:
+            db.session.delete(category)
+            db.session.commit()
+            flash(f'Category: {category.name} is deleted succesfully', 'success')
+            return redirect(url_for('category'))
+        except:
+            db.session.rollback()
+            flash(f'Error occurred! Category: {category.name} was not deleted', 'danger')
+            return redirect(url_for('category'))
+        
     return redirect(url_for('admin'))
 
 
@@ -178,6 +188,7 @@ def addproduct():
     return render_template('products/addproduct.html', title='Add Product Page', form = form, brands=brands, categories=categories)
 
 
+################################################### Update product details ###################################################
 @app.route('/updateproduct/<int:id>', methods=['GET', 'POST'])
 def updateproduct(id):
     brands = Brand.query.all()

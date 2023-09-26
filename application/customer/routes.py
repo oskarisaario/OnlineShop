@@ -2,46 +2,21 @@ from flask import redirect, render_template, url_for, flash, request, session, c
 from flask_login import login_required, current_user, login_user, logout_user
 import pdfkit
 import stripe
-#import wkhtmltopdf
+
 from application import db, app, photos, search, bcrypt, login_manager
 from .forms import CustomerRegisterForm, CustomerLoginForm
 from .models import Customer, CustomerOrder
+from application.products.routes import brands, categories
+from application.products.models import Addproduct
+import config
 
 import secrets
-import os
+#import os
 
 
-
-publishable_key = 'pk_test_51NsKcqBQQM3gMqIDpttH1xWgVlQszJrs2YR48aZh3asBfJ7djW0ClxBF1JfmtBEsv81cc5dLHxemYoE0zsFPkp1D007Wtf7yij'
-stripe.api_key = 'sk_test_51NsKcqBQQM3gMqIDr8mO3sjgoTXbppQTYmLBXazFHxtLYVT7uW8U6qNJEYd4JvfKpK1c9HY5Jk5EYBszzLghxwg500M5zuo4n8'
-#stripe_key = 'sk_test_51NsKcqBQQM3gMqIDr8mO3sjgoTXbppQTYmLBXazFHxtLYVT7uW8U6qNJEYd4JvfKpK1c9HY5Jk5EYBszzLghxwg500M5zuo4n8'
-@app.route('/payment', methods=['POST'])
-@login_required
-def payment():
-    invoice = request.form.get('invoice')
-    amount = request.form.get('amount')
-    print(amount)
-    customer = stripe.Customer.create(
-        email = request.form['stripeEmail'],
-        source = request.form['stripeToken']
-    )
-
-    charge = stripe.Charge.create(
-        customer = customer.id,
-        description = 'Onlineshop',
-        amount = amount,
-        currency = 'eur'
-    )
-    orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
-    orders.status = 'Paid'
-    db.session.commit()
-    return redirect(url_for('paymentSuccess'))
-
-
-@app.route('/paymentSuccess')
-def paymentSuccess():
-    return render_template('customer/paymentSuccess.html')
-
+########### Set up for Stripe payment API ############
+publishable_key = config.publishable_api_key
+stripe.api_key = config.secret_api_key
 
 
 ################################### Create customer user and add it to database ################################### 
@@ -64,7 +39,7 @@ def customer_register():
         db.session.add(customer)
         flash(f'Registered as {form.username.data}, Welcome!', 'success')
         db.session.commit()
-        return redirect(url_for('login'))
+        return redirect(url_for('customerLogin'))
 
     return render_template('customer/register.html', form=form)
 
@@ -90,6 +65,10 @@ def customerLogin():
 ################################### Customer logout from shop ################################### 
 @app.route('/customer/logout')
 def customerLogout():
+    if 'Shoppingcart' not in session or len(session['Shoppingcart']) <= 0:
+        logout_user()
+        return redirect(url_for('home'))
+    session.pop('Shoppingcart')
     logout_user()
     return redirect(url_for('home'))
 
@@ -105,15 +84,11 @@ def getOrder():
             order = CustomerOrder(invoice=invoice, customer_id=customer_id, orders = session['Shoppingcart'])
             db.session.add(order)
             db.session.commit()
-            session.pop('Shoppingcart')
-            flash('Your order has been sent', 'success')
-            return redirect(url_for('orders', invoice=invoice))
-        
+            return redirect(url_for('orders', invoice=invoice))       
         except Exception as e:
             print(e)
             flash('Something went wrong with order', 'danger')
             return redirect(url_for('get_cart'))
-    
     flash('Please login before proceed!', 'danger')
     return redirect(url_for('customerLogin'))
 
@@ -136,7 +111,7 @@ def orders(invoice):
         flash('Please login before proceed!', 'danger')
         return redirect(url_for('customerLogin'))
     
-    return render_template('/customer/order.html', invoice=invoice, subTotal=subTotal, grandTotal=grandTotal, customer=customer, orders=orders)
+    return render_template('/customer/order.html', invoice=invoice, subTotal=subTotal, grandTotal=grandTotal, customer=customer, orders=orders, brands=brands(), categories=categories())
 
 
 ################################### Route for getting PDF receipt ################################### 
@@ -155,7 +130,6 @@ def get_pdf(invoice):
                 subTotal = int(product['quantity']) * (float(product['price']) - discount)
                 grandTotal += subTotal   
 
-            #grandTotal = str(grandTotal)
             rendered = render_template('/customer/pdf.html', invoice=invoice, grandTotal=grandTotal, customer=customer, orders=orders)
             path_wkhtmltopdf = "C:\Program Files\wkhtmltopdf\\bin\wkhtmltopdf.exe"
             config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -166,3 +140,37 @@ def get_pdf(invoice):
             return response
     
     return request(url_for('orders'))
+
+
+################################### Handels stripe payment and deletes shoppingcart from session if payment completed ################################### 
+@app.route('/payment', methods=['POST'])
+@login_required
+def payment():
+    invoice = request.form.get('invoice')
+    amount = request.form.get('amount')
+    customer = stripe.Customer.create(
+        email = request.form['stripeEmail'],
+        source = request.form['stripeToken']
+    )
+
+    charge = stripe.Charge.create(
+        customer = customer.id,
+        description = 'Onlineshop',
+        amount = amount,
+        currency = 'eur'
+    )
+    orders = CustomerOrder.query.filter_by(customer_id=current_user.id, invoice=invoice).order_by(CustomerOrder.id.desc()).first()
+    orders.status = 'Paid'
+    db.session.commit()
+    for key, item in session['Shoppingcart'].items():
+        id = key
+        quantity = item['quantity']
+        product = Addproduct.query.get_or_404(id)
+        try:
+            product.stock -= quantity
+            db.session.commit()
+        except Exception:
+            flash(f'Update product details failed! We have {product.name} only {product.stock} pieces in stock!', 'danger')
+    session.pop('Shoppingcart')
+    flash('Your payment was succesfully proceeded and order has been sent', 'success')
+    return redirect(url_for('orders', invoice=invoice))

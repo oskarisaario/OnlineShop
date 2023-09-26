@@ -6,18 +6,18 @@
         {% include '_messages.html' %}
         <div class="row">
             <div class="col-md-12">
-                Invoice: {{orders.invoice}}
+                <b>Invoice:</b> {{orders.invoice}}
                 <br>
-                Status: {{orders.status}}
+                <b>Status:</b> {{orders.status}}
                 <br>
-                Customer name: {{customer.name}}
+                <b>Customer name:</b> {{customer.name}}
                 <br>
-                Customer email: {{customer.email}}
+                <b>Customer email:</b> {{customer.email}}
                 <br>
-                Customer contact: {{customer.contact}}
+                <b>Customer</b> contact: {{customer.contact}}
                 <br>
                 <br>
-            <table class="table table-sm">
+            <table class="table table-sm table-hover">
                 <thead>
                     <th>Sr</th>
                     <th>Name</th>
@@ -56,6 +56,7 @@
             <table class="table table-sm">
                 <tr>
                     <td>
+                        <!-----------------------Payment handling ----------------------->
                         {% if orders.status == 'Paid' %}
                         {% else %}
                         <form action="{{url_for('payment')}}" method="POST">
@@ -69,20 +70,24 @@
                                 class="stripe-button"
                                 data-key="pk_test_51NsKcqBQQM3gMqIDpttH1xWgVlQszJrs2YR48aZh3asBfJ7djW0ClxBF1JfmtBEsv81cc5dLHxemYoE0zsFPkp1D007Wtf7yij"
                                 data-name="Onlineshop"
-                                data-description="Comfortable"
+                                data-description="Enter: 4242 4242 4242 4242 to card number!!!"
                                 data-amount="{{ amount * 10 }}"
                                 data-currency="eur">
                             </script>
                         </form>
                         {% endif %}
+                        <!----------------------- End payment handling ----------------------->
                     </td>
-                    <td width="40%"></td>
+                    <td width="53.5%"></td>
                     <td></td>
                     <td></td>
-                    <td>                
+                    <td>         
+                        {% if orders.status == 'Paid' %}       
                         <form action="{{url_for('get_pdf', invoice=orders.invoice)}}" method="POST">
-                            <button type="submit" class="btn btn-info">Get receipt as PDF</button>
+                            <button type="submit" class="btn btn-outline-danger">Get receipt as PDF</button>
                         </form>
+                        {% else %}
+                        {% endif %}
                     </td>
                     <td>
                         {% set grandTotal = grandTotal|int %}

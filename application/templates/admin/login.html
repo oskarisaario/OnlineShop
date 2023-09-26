@@ -3,22 +3,26 @@
 {% block content %}
 
 <div class="container">
-    {% from "_formhelpers.html" import render_field %}
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-    <div class="text-center h1 text-white bg-primary p-2">Login</div>
-    {% include '_messages.html' %}
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.csrf_token }}<!-- Poista tämä jos ei enää toimi -->
-        <div>
-            {{ render_field(form.username, class="form-control") }}
-            {{ render_field(form.password, class="form-control") }}
+    <div class="row">
+        {% from "_formhelpers.html" import render_field %}
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <div class="col border d-flex align-items-center justify-content-center mt-2 mb-2 bg-dark">
+                <h2 class="text-white">Admin Login</h2>
+            </div>
+        {% include '_messages.html' %}
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            <div>
+                {{ render_field(form.username, class="form-control") }}
+                {{ render_field(form.password, class="form-control") }}
 
+            </div>
+            <p><input type=submit value="Login" class="btn btn-outline-dark mt-2"></p>
+        </form>
         </div>
-        <p><input type=submit value="Login" class="btn btn-info mt-2"></p>
-  </form>
-</div>
-    <div class="col-md-4"></div>
+        <div class="col-md-4"></div>
+    </div>
 </div>
 
 

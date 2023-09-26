@@ -8,16 +8,20 @@
         <div class="col-md-6">
             {% include "_messages.html" %}
             {% if updatebrand %}
-            <h1 class="text-center mt-5">Update brand</h1>
+            <div class="col border d-flex align-items-center justify-content-center mt-2 mb-2 bg-dark">
+                <h1 class="text-white">Update brand</h1>
+            </div>
             <form action="" method="POST">
                 <input type="text" name="brand" class="form-control" value="{{ updatebrand.name }}">
-                <input type="submit" value="Update brand" class="btn btn-info mt-2"> <a href="{{url_for('brands')}}" class="btn btn-danger mt-2"> Cancel</a>
+                <input type="submit" value="Update brand" class="btn btn-outline-dark mt-2"> <a href="{{url_for('brands')}}" class="btn btn-outline-danger mt-2 float-end"> Cancel</a>
             </form>
             {% else %}
-            <h1 class="text-center mt-5">Update category</h1>
+            <div class="col border d-flex align-items-center justify-content-center mt-2 mb-2 bg-dark">
+                <h1 class="text-white">Update category</h1>
+            </div>
             <form action="" method="POST">
                 <input type="text" name="category" class="form-control" value="{{ updatecategory.name }}">
-                <input type="submit" value="Update category " class="btn btn-info mt-2"> <a href="{{url_for('category')}}" class="btn btn-danger mt-2"> Cancel</a>
+                <input type="submit" value="Update category " class="btn btn-outline-dark mt-2"> <a href="{{url_for('category')}}" class="btn btn-outline-danger mt-2 float-end"> Cancel</a>
             </form>
             {% endif %}
         </div>

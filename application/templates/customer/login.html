@@ -3,10 +3,13 @@
 {% block content %}
 
 <div class="container">
+    <div class="row">
     {% from "_formhelpers.html" import render_field %}
     <div class="col-md-4"></div>
-        <div class="col-md-4">
-            <div class="text-center h1 text-white bg-primary p-2">Login</div>
+    <div class="col-md-4">
+        <div class="col border d-flex align-items-center justify-content-center mt-2 mb-2 bg-dark">
+            <h2 class="text-white">Login</h2>
+        </div>
             {% include '_messages.html' %}
             <form method="POST" enctype="multipart/form-data">
                 {{ form.csrf_token }}
@@ -15,11 +18,15 @@
                     {{ render_field(form.password, class="form-control") }}
 
                 </div>
-                <p><input type=submit value="Login" class="btn btn-info mt-2"></p>
+                <div class="text-center">
+                    <p><input type=submit value="Login" class="btn btn-outline-dark mt-2"></p>
+                    <p>No account yet? Sign in now!</p>
+                    <a href="{{url_for('customer_register')}}" class="btn btn-outline-dark mt-2">Register</a>
+                </div>
             </form>
-            </div>  
-        </div>
+    </div>  
     <div class="col-md-4"></div>
+    </div>
 </div>
 
 

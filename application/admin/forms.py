@@ -1,9 +1,9 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, ValidationError
+from wtforms import Form, StringField, PasswordField, validators, ValidationError
 from flask_wtf import FlaskForm
 
 from .models import User
 
-#class RegistrationForm(Form):
+
 class RegistrationForm(FlaskForm):
     name = StringField('Name', [validators.Length(min=4, max=25)])
     username = StringField('Username', [validators.Length(min=4, max=25)])

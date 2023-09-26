@@ -8,16 +8,22 @@
         <div class="col-md-6">
             {% include "_messages.html" %}
             {% if brands %}
-            <h1 class="text-center mt-5">Add a brand</h1>
+            <div class="col border d-flex align-items-center justify-content-center mt-2 mb-2 bg-dark">
+                <h2 class="text-white">Add a brand</h2>
+            </div>
             <form action="" method="POST">
                 <input type="text" name="brand" class="form-control" required>
-                <input type="submit" value="Add brand" class="btn btn-info mt-2">
+                <input type="submit" value="Add brand" class="btn btn-outline-dark mt-2">
+                <a href="{{url_for('admin')}}" class="btn btn-outline-danger mt-2 float-end"> Cancel</a>
             </form>
             {% else %}
-            <h1 class="text-center mt-5">Add a category</h1>
+            <div class="col border d-flex align-items-center justify-content-center mt-2 mb-2 bg-dark">
+                <h2 class="text-white">Add a category</h2>
+            </div>
             <form action="" method="POST">
                 <input type="text" name="category" class="form-control" required>
-                <input type="submit" value="Add category" class="btn btn-info mt-2">
+                <input type="submit" value="Add category" class="btn btn-outline-dark mt-2">
+                <a href="{{url_for('admin')}}" class="btn btn-outline-danger mt-2 float-end"> Cancel</a>
             </form>
             {% endif %}
         </div>

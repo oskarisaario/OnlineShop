@@ -22,10 +22,10 @@
                     {% endif %}
                 </div>
                 <div class="card-footer">
-                    <a href="{{url_for('single_page', id=product.id)}}" class="float-start btn btn-sm btn-primary">Details</a> 
+                    <a href="{{url_for('single_page', id=product.id)}}" class="float-start btn btn-sm btn-outline-dark">Details</a> 
                     <form action="{{url_for('addCart')}}" method="POST">
                         <input type="hidden" name="product_id" value="{{product.id}}">
-                        <button type="submit" class="btn btn-sm btn-warning float-end">Add Cart</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger float-end">Add to Cart</button>
                         <input type="hidden" name="quantity" id="" value="1" min="1" max="{{product.stock}}">
                         {% set colors = product.colors.split(',') %}
                             <select name="colors" id="colors" style="visibility: hidden;">

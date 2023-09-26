@@ -6,7 +6,7 @@
     {% include '_messages.html' %}
     <div class="row">
         <div class="col-md-12">
-        <table class="table table-sm">
+        <table class="table table-sm table-hover">
             <thead>
                 <th>Sr</th>
                 <th>Product</th>
@@ -50,21 +50,21 @@
                         </td>
                         {% set subtotal = "%0.2f"|format(product.quantity|int * (product.price|float - discount|float)) %}
                         <td>{{subtotal}}€</td>
-                        <td><button type="submit" class="btn btn-sm btn-info">Update</button></td>
+                        <td><button type="submit" class="btn btn-sm btn-outline-dark">Update</button></td>
                     </form>
-                    <td><a href="{{url_for('deleteitem', id=key)}}" class="btn btn-sm btn-danger">Remove</a></td>
+                    <td><a href="{{url_for('deleteitem', id=key)}}" class="btn btn-sm btn-outline-danger">Remove</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <table class="table table-sm">
             <tr>
-                <td><a class="btn btn-info" href="{{url_for('getOrder')}}">Check out</a></td>
+                <td><a class="btn btn-outline-dark" href="{{url_for('getOrder')}}">Proceed for payment</a></td>
                 <td width="47%"></td>
                 <td></td>
                 <td></td>
                 <td><h4 style="text-decoration: double underline;">Grandtotal: {{"%0.2f"|format(grandtotal)}}€</h4></td>
-                <td width="11%"><a href="{{url_for('clearcart')}}" class="btn btn-sm btn-danger ms-2">Clear cart</a></td>
+                <td width="11%"><a href="{{url_for('clearcart')}}" class="btn btn-sm btn-outline-danger ms-2">Clear cart</a></td>
             </tr>
         </table>
         </div>

@@ -36,7 +36,7 @@
             </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item">
-                <a href="{{url_for('customerLogout')}}" class="nav-link">{{current_user.name}}</a>
+                <a href="{{url_for('get_cart')}}" class="nav-link">{{current_user.name}}</a>
             </li>
             <li class="nav-item">
                 <a href="{{url_for('customerLogout')}}" class="nav-link float-end">Logout</a>
@@ -52,7 +52,7 @@
             </ul>
             <form class="d-flex" action="{{url_for('result')}}">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="q">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <button class="btn btn-outline-danger" type="submit">Search</button>
             </form>
         </div>
         </div>
