@@ -1,10 +1,7 @@
 from flask import Flask
-#import psycopg2
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
-#from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-#from sqlalchemy_utils import database_exists, create_database
 from flask_uploads import IMAGES, UploadSet, configure_uploads
 from flask_msearch import Search
 from flask_login import LoginManager
