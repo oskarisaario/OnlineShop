@@ -1,9 +1,11 @@
 from flask import redirect, render_template, url_for, flash, request, session, current_app
 
-from application import db, app, photos, search
+from application import db, app, search, img_storage
 from .models import Brand, Category, Addproduct
 from .forms import Addproducts
 import secrets, os
+
+
 
 
 
@@ -177,10 +179,21 @@ def addproduct():
         desc = form.description.data
         brand = request.form.get('brand')
         category = request.form.get('category')
-        image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
-        image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
-        image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
-        add_product = Addproduct(name=name, price=price, discount=discount, stock=stock, colors=colors, desc=desc, brand_id=brand, category_id=category, image_1=image_1, image_2=image_2, image_3=image_3)
+        image_1 = img_storage.child(f'image_1{name}').put(request.files.get('image_1'))
+        image_2 = img_storage.child(f'image_2{name}').put(request.files.get('image_2'))
+        image_3 = img_storage.child(f'image_3{name}').put(request.files.get('image_3'))
+        add_product = Addproduct(
+          name=name, price=price, 
+          discount=discount, 
+          stock=stock, 
+          colors=colors, 
+          desc=desc, 
+          brand_id=brand, 
+          category_id=category, 
+          image_1=img_storage.child(f'image_1{name}').get_url(None),
+          image_2=img_storage.child(f'image_2{name}').get_url(None),
+          image_3=img_storage.child(f'image_3{name}').get_url(None)
+        )
         db.session.add(add_product)
         flash(f'{name} is added to the database', 'success')
         db.session.commit()
@@ -206,24 +219,9 @@ def updateproduct(id):
         product.category_id = category
         product.colors = form.colors.data
         product.desc = form.description.data
-        if request.files.get('image_1'):
-            try:
-                os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
-                product.image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
-            except:
-                product.image_1 = photos.save(request.files.get('image_1'), name=secrets.token_hex(10) + ".")
-        if request.files.get('image_2'):
-            try:
-                os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_2))
-                product.image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")
-            except:
-                product.image_2 = photos.save(request.files.get('image_2'), name=secrets.token_hex(10) + ".")       
-        if request.files.get('image_3'):
-            try:
-                os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_3))
-                product.image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
-            except:
-                product.image_3 = photos.save(request.files.get('image_3'), name=secrets.token_hex(10) + ".")
+        product.image_1=img_storage.child(f'image_1{product.name}').get_url(None),
+        product.image_2=img_storage.child(f'image_2{product.name}').get_url(None),
+        product.image_3=img_storage.child(f'image_3{product.name}').get_url(None)
         db.session.commit()
         flash(f'Product: {product.name} is updated', 'success')
         return redirect(url_for('admin'))  
@@ -240,12 +238,6 @@ def updateproduct(id):
 def deleteproduct(id):
     product = Addproduct.query.get_or_404(id)
     if request.method == "POST":
-        try:
-            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_1))
-            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_2))
-            os.unlink(os.path.join(current_app.root_path, "static/images/" + product.image_3))
-        except Exception as e:
-            print(e)
         db.session.delete(product)
         db.session.commit()
 

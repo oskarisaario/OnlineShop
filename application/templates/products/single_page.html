@@ -6,7 +6,7 @@
     {% include '_messages.html' %}
     <div class="row">
         <div class="col-md-6" id="b_image">
-            <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{product.name}}" width="400" height="400">
+            <img src="{{ product.image_1 }}" alt="{{product.name}}" width="400" height="400">
         </div>
         <div class="col-md-6">
             <h4>{{ product.name }}</h4>
@@ -43,9 +43,9 @@
     </div>
     <div class="row">
         <div class="col-md-12 mt-3" id="s_image">
-            <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{ product.name }}" width="120" height="120" class="p-3">
-            <img src="{{url_for('static', filename='images/' + product.image_2)}}" alt="{{ product.name }}" width="120" height="120" class="p-3">
-            <img src="{{url_for('static', filename='images/' + product.image_3)}}" alt="{{ product.name }}" width="120" height="120" class="p-3">
+            <img src="{{ product.image_1 }}" alt="{{ product.name }}" width="120" height="120" class="p-3">
+            <img src="{{ product.image_2 }}" alt="{{ product.name }}" width="120" height="120" class="p-3">
+            <img src="{{ product.image_3 }}" alt="{{ product.name }}" width="120" height="120" class="p-3">
         </div>
     </div>
 

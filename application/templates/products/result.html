@@ -8,7 +8,7 @@
         {% for product in products %}
         <div class="col-md-3 mt-4 d-flex">
             <div class="card">
-                <img src="{{url_for('static', filename='images/' + product.image_1)}}" alt="{{product.name}}" class="card-img-top" height="300">
+                <img src="{{ product.image_1 }}" alt="{{product.name}}" class="card-img-top" height="300">
                 <div class="card-body">
                     {% if product.discount > 0%}
                     <h4 style="font-weight:bold ; color:white; background-color:red; transform: rotate(-25deg); position: absolute; top:7.5%; left: 0%;">DISCOUNT {{product.discount}}%</h4>
