@@ -16,7 +16,8 @@ import config
 #Setting up App and Database
 app = Flask(__name__)
 app.config['SECRET_KEY'] = config.secret_key
-url = f"postgresql://postgres:{config.db_pw}@localhost:5432"
+#url = f"postgresql://postgres:{config.db_pw}@localhost:5432"
+url = config.rdb_url
 app.config['SQLALCHEMY_DATABASE_URI']=url
 
 #Setting up firebase
