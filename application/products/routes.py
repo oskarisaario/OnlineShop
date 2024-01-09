@@ -179,9 +179,9 @@ def addproduct():
         desc = form.description.data
         brand = request.form.get('brand')
         category = request.form.get('category')
-        image_1 = img_storage.child(f'image_1{name}').put(request.files.get('image_1'))
-        image_2 = img_storage.child(f'image_2{name}').put(request.files.get('image_2'))
-        image_3 = img_storage.child(f'image_3{name}').put(request.files.get('image_3'))
+        img_storage.child(f'image_1{name}').put(request.files.get('image_1'))
+        img_storage.child(f'image_2{name}').put(request.files.get('image_2'))
+        img_storage.child(f'image_3{name}').put(request.files.get('image_3'))
         add_product = Addproduct(
           name=name, price=price, 
           discount=discount, 
